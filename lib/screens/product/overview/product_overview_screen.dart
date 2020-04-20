@@ -16,11 +16,15 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   bool _showFavourites = false;
+  bool _isInit = true;
 
   @override
-  void initState() {
-    super.initState();
-    Provider.of<ProductProvider>(context, listen: false).fetchproducts();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      Provider.of<ProductProvider>(context, listen: false).fetchproducts();
+    }
+    _isInit = false;
   }
 
   @override
