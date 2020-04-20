@@ -9,17 +9,36 @@ class OrderScreen extends StatelessWidget {
   static const routeName = '/orders';
   @override
   Widget build(BuildContext context) {
-    final order = Provider.of<OrderProvider>(context).orders;
     return Scaffold(
       appBar: AppBar(
         title: Text('Orders'),
       ),
       drawer: AppDrawer(),
-      body: ListView.builder(
-        itemBuilder: (context, i) {
-          return OrderItem(order: order[i]);
+      body: FutureBuilder(
+        future:
+            Provider.of<OrderProvider>(context, listen: false).fetchOrders(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (snapshot.error != null) {
+            return Center(
+              child: Text('Error !!'),
+            );
+          }
+          return Consumer<OrderProvider>(
+            builder: (ctx, orderData, ch) {
+              return ListView.builder(
+                itemBuilder: (context, i) {
+                  return OrderItem(order: orderData.orders[i]);
+                },
+                itemCount: orderData.orders.length,
+              );
+            },
+          );
         },
-        itemCount: order.length,
       ),
     );
   }
@@ -38,6 +57,7 @@ class OrderItem extends StatefulWidget {
 
 class _OrderItemState extends State<OrderItem> {
   var _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return Card(
