@@ -36,12 +36,7 @@ class OrderProvider with ChangeNotifier {
           amount: orderValue['amount'],
           products: (orderValue['products'] as List<dynamic>)
               .map(
-                (item) => CartItem(
-                  id: item['id'],
-                  price: item['price'],
-                  quantity: item['quantity'],
-                  title: item['title'],
-                ),
+                (item) => CartItem.fromJson(item),
               )
               .toList(),
           dateTime: DateTime.parse(

@@ -12,6 +12,15 @@ class CartItem {
   final double price;
   final String title;
   int quantity;
+
+  factory CartItem.fromJson(Map<String, dynamic> json) {
+    return CartItem(
+      id: json['id'],
+      price: json['price'],
+      quantity: json['quantity'],
+      title: json['title'],
+    );
+  }
 }
 
 class CartProvider with ChangeNotifier {
