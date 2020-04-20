@@ -15,12 +15,12 @@ class ProductProvider with ChangeNotifier {
 
   Future fetchproducts() async {
     const url = 'https://flutter-api-1f7da.firebaseio.com/product.json';
-
+    final List<Product> loadedProduct = [];
     final Map fetchResponse = await Network.getApi(url);
     if (fetchResponse['error'] == null) {
       final Map<String, dynamic> succesResponse = fetchResponse['response'];
       succesResponse.forEach((productKey, productValue) {
-        _productList.add(
+        loadedProduct.add(
           Product(
             id: productKey,
             description: productValue['description'],
@@ -31,6 +31,7 @@ class ProductProvider with ChangeNotifier {
           ),
         );
       });
+      _productList = loadedProduct;
       notifyListeners();
     }
   }
@@ -62,10 +63,22 @@ class ProductProvider with ChangeNotifier {
     return response;
   }
 
-  void updateProduct(Product updateproductData) {
+  void updateProduct(Product updateproductData) async {
+    final url =
+        'https://flutter-api-1f7da.firebaseio.com/product/${updateproductData.id}.json';
     final index =
         _productList.indexWhere((prod) => prod.id == updateproductData.id);
     if (index >= 0) {
+      final response = await Network.updateApi(
+        url: url,
+        body: {
+          "title": updateproductData.title,
+          "description": updateproductData.description,
+          "imageUrl": updateproductData.imageUrl,
+          "price": updateproductData.price,
+          "isFavourites": updateproductData.isFavourites,
+        },
+      );
       _productList[index] = updateproductData;
       notifyListeners();
     }
