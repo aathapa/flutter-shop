@@ -22,13 +22,44 @@ class Network {
   }
 
   static Future<Map<String, Object>> getApi(String url) async {
-    try {
-      http.Response response = await http.get(url);
+    http.Response response = await http.get(url);
+    if (response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
-      return {"error": null, "response": jsonResponse};
-    } catch (error) {
-      return {"error": error, "response": null};
+      return {
+        "error": null,
+        "response": jsonResponse,
+        "statusCode": response.statusCode
+      };
     }
+    return {
+      "error": true,
+      "response": null,
+      "statusCode": response.statusCode,
+    };
+  }
+
+  static Future<Map<String, Object>> updateApi({
+    String url,
+    Map<String, Object> body,
+  }) async {
+    http.Response response = await http.patch(
+      url,
+      body: convert.jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body);
+      return {
+        "error": null,
+        "response": jsonResponse,
+        "statusCode": response.statusCode
+      };
+    }
+    return {
+      "error": true,
+      "response": null,
+      "statusCode": response.statusCode,
+    };
   }
 
   static Future<bool> deleteApi(String url) async {
