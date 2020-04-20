@@ -21,50 +21,57 @@ class ProductManageScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 5),
-        child: ListView.builder(
-          itemCount: product.productList.length,
-          itemBuilder: (_, i) {
-            final productItem = product.productList[i];
-            return Column(
-              children: <Widget>[
-                ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(productItem.imageUrl),
-                  ),
-                  title: Text(productItem.title),
-                  trailing: Container(
-                    width: 100,
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                            color: Theme.of(context).primaryColor,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await Provider.of<ProductProvider>(context, listen: false)
+              .fetchproducts();
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: ListView.builder(
+            itemCount: product.productList.length,
+            itemBuilder: (_, i) {
+              final productItem = product.productList[i];
+              return Column(
+                children: <Widget>[
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(productItem.imageUrl),
+                    ),
+                    title: Text(productItem.title),
+                    trailing: Container(
+                      width: 100,
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () => Navigator.of(context).pushNamed(
+                              EditProductScreen.routeName,
+                              arguments: productItem.id,
+                            ),
                           ),
-                          onPressed: () => Navigator.of(context).pushNamed(
-                            EditProductScreen.routeName,
-                            arguments: productItem.id,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                            color: Theme.of(context).errorColor,
-                          ),
-                          onPressed: () => Provider.of<ProductProvider>(context,
-                                  listen: false)
-                              .deleteProduct(productItem.id),
-                        )
-                      ],
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Theme.of(context).errorColor,
+                            ),
+                            onPressed: () => Provider.of<ProductProvider>(
+                                    context,
+                                    listen: false)
+                                .deleteProduct(productItem.id),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Divider()
-              ],
-            );
-          },
+                  Divider()
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
